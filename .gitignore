@@ -2,3 +2,4 @@
 node_modules
 sitespeed.run
 nohup.out
+/sitespeed-result

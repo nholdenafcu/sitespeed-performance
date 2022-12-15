@@ -1,29 +1,6 @@
 {
-  "extends": "/config/secrets.json",
+  "extends": "./config/secrets.json",
   "utc": true,
-  "browsertime": {
-    "connectivity": {
-      "engine": "throttle",
-      "profile": "cable"
-    },
-    "visualElements": true,
-    "iterations": 3,
-    "browser": "chrome",
-    "video": true,
-    "visualMetrics": true,
-    "visualMetricsPortable": true,
-    "videoParams": {
-      "thumbsize": 600
-    },
-    "chrome": {
-      "collectConsoleLog": true,
-      "enableTraceScreenshots": true
-    },
-    "firefox": {
-      "includeResponseBodies": "all",
-      "disableBrowsertimeExtension": true
-     }
-  },
   "cpu": true,
   "gzipHAR": true,
   "html": {
