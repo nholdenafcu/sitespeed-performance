@@ -3,3 +3,4 @@ node_modules
 sitespeed.run
 nohup.out
 sitespeed-result/
+config/secrets.json

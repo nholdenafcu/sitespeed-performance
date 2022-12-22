@@ -1,9 +1,0 @@
-{
-  "extends": "./config/desktop.json",
-  "browsertime": {
-    "iterations": 5,
-    "flushDNS": true,
-    "xvfb": true
-  },
-  "slug": "firstView"
-}
