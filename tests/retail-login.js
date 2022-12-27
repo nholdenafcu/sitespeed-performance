@@ -1,6 +1,6 @@
 module.exports = async function(context, commands) {
   await commands.navigate(
-    'https://web.dev.afcu.live.backbaseservices.com/retail-banking'
+    'https://web.stg.afcu.live.backbaseservices.com/retail-banking'
   );
 
   await commands.measure.start('login');
