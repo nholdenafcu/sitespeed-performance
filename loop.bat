@@ -10,6 +10,7 @@ if exist "%CONTROL_FILE%" (
   exit 1
 ) else (
   type nul > sitespeed.run
+  docker image pull sitespeedio/sitespeed.io:26.1.0
 )
 
 for /L %%N in (1,0,10) do (

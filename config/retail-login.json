@@ -1,0 +1,26 @@
+{
+    "extends": "./config/secrets.json",
+    "utc": true,
+    "cpu": true,
+    "gzipHAR": true,
+    "html": {
+      "fetchHARFiles": true,
+      "showScript": true,
+      "compareURL": "https://compare.sitespeed.io/"
+    },
+    "screenshot": {
+      "type": "jpg"
+    },
+    "slug": "RetailLogin",
+    "copyLatestFilesToBase": true,
+    "copyLatestFilesToBaseGraphiteNamespace": true,
+    "graphite": {
+      "namespace": "sitespeed_io.Retail",
+      "addSlugToKey": true,
+      "messages": ["pageSummary", "run"]
+    },
+    "thirdParty": {
+      "cpu": true
+    }
+  }
+  

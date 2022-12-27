@@ -1,6 +1,8 @@
 module.exports = async function(context, commands) {
-  await commands.navigate('https://web.dev.afcu.live.backbaseservices.com/retail-banking');
-  
+  await commands.navigate(
+    'https://web.dev.afcu.live.backbaseservices.com/retail-banking'
+  );
+
   await commands.measure.start('login');
 
   try {
@@ -13,4 +15,4 @@ module.exports = async function(context, commands) {
   } catch (e) {
     throw e;
   }
-}
+};
