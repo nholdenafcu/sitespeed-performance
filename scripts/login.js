@@ -1,16 +1,24 @@
-module.exports = async function(context, commands) {
+module.exports = async function(context, commands, env) {
   await commands.navigate(
-    'https://web.dev.afcu.live.backbaseservices.com/retail-banking'
+    `https://web.${env}.afcu.live.backbaseservices.com/retail-banking`
   );
 
-  await commands.measure.start('login');
+  await commands.measure.start(`login-${env}`);
 
   try {
-    await commands.addText.byId('TestOJohnson', 'username');
-    await commands.addText.byId('BB21@Ojohnson', 'password-field');
+    await commands.addText.byId('TestAMonroe', 'username');
+    await commands.addText.byId('BB21@Amonroe', 'password-field');
 
     await commands.click.byIdAndWait('kc-login');
 
+    // await commands.wait.byTime(4000);
+
+    const url = await commands.js.run('return window.location.href');
+
+    if (url.includes("accounts-overview")) {
+      await commands.wait.byCondition("!!document.querySelector('div.bb-accounts-overview-grid') === true", 20000)
+    }
+    
     return commands.measure.stop();
   } catch (e) {
     throw e;

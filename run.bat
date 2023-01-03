@@ -17,4 +17,4 @@ for %%f in (%~dp0tests\*.txt %~dp0tests\*.js) do (
 )
 
 docker volume prune -f
-timeout 20
+timeout 5
