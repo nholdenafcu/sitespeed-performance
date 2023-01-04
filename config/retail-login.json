@@ -11,7 +11,7 @@
     "screenshot": {
       "type": "jpg"
     },
-    "slug": "Retail",
+    "slug": "RetailLogin",
     "copyLatestFilesToBase": true,
     "copyLatestFilesToBaseGraphiteNamespace": true,
     "graphite": {

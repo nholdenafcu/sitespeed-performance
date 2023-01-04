@@ -1,103 +1,80 @@
-# Tests running dashboard.sitespeed.io
+# Addition Finanacial Backbase Frontend Peformance Testing
 
-[![Build status][travis-image]][travis-url]
+This is a working project using Sitespeed.io with docker that sends performance testing metrics to a graphite database. The graphite database used with AFCU's Performance Testing project is composed in a docker-compose.yml file similar to the one found below.
 
-This is a working example of how you can use sitespeed.io to monitor the performance of your web site. The code run on an instance on Digital Ocean and send the metrics to [dashboard.sitespeed.io](https://dashboard.sitespeed.io) (that is setup using our [docker-compose file](https://github.com/sitespeedio/sitespeed.io/blob/main/docker/docker-compose.yml) and configured for production usage).
+```yml
+version: '3'
+services:
+    grafana:
+      image: grafana/grafana:9.2.0
+      hostname: grafana
+      depends_on:
+        - graphite
+      links:
+        - graphite
+      ports:
+        - "3000:3000"
+      environment:
+        - GF_SECURITY_ADMIN_PASSWORD=hdeAga76VG6ga7plZ1
+        - GF_SECURITY_ADMIN_USER=sitespeedio
+        - GF_AUTH_ANONYMOUS_ENABLED=true
+        - GF_USERS_ALLOW_SIGN_UP=false
+        - GF_USERS_ALLOW_ORG_CREATE=false
+        - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      volumes:
+        - grafana:/var/lib/grafana
+      restart: always
+    graphite:
+      image: sitespeedio/graphite:1.1.10-3
+      hostname: graphite
+      ports:
+        - "2003:2003"
+        - "8080:80"
+      restart: always
+      volumes:
+        # In production you should configure/map these to your container
+        # Make sure whisper and graphite.db/grafana.db lives outside your containerr
+        # https://www.sitespeed.io/documentation/sitespeed.io/graphite/#graphite-for-production-important
+        - whisper:/opt/graphite/storage/whisper
+        # Download an empty graphite.db from https://github.com/sitespeedio/sitespeed.io/tree/main/docker/graphite
+        # - /absolute/path/to/graphite/graphite.db:/opt/graphite/storage/graphite.db
+        # 
+        # And put the configuration files on your server, configure them as you need
+        # Download from https://github.com/sitespeedio/docker-graphite-statsd/tree/main/conf/graphite
+        # - /absolute/path/to/graphite/conf/storage-schemas.conf:/opt/graphite/conf/storage-schemas.conf
+        # - /absolute/path/to/graphite/conf/storage-aggregation.conf:/opt/graphite/conf/storage-aggregation.conf
+        # - /absolute/path/to/graphite/conf/carbon.conf:/opt/graphite/conf/carbon.conf
+    grafana-setup:
+      image: sitespeedio/grafana-bootstrap:24.5.0
+      links:
+        - grafana
+      environment:
+        - GF_PASSWORD=hdeAga76VG6ga7plZ1
+        - GF_USER=sitespeedio
+volumes:
+    grafana:
+    whisper:
+```
 
-You should use this repository as an example of what you can setup yourself. The idea is to make it easy to setup, easy to add new URLs to test and easy to add a new user journey. You start the a script ([**loop.sh**](https://github.com/sitespeedio/dashboard.sitespeed.io/blob/main/loop.sh)) on your server that runs forever but for each iteration, it runs git pull and update the scripts so that if you add new URLs to test, they are automatically picked up.
+You start the script ([**loop.bat**](https://github.com/nholdenafcu/sitespeed-performance/loop.bat)) on your server that runs forever but for each iteration, it runs git pull and update the scripts so that if you add new test scripts to test, they are automatically picked up. You can run multiple iterations of this project on the same server by pulling it multiple times into its own directory. Ensure that you have the resources to run every docker container.
 
-You can check out the [full documentation at our documentation site](https://www.sitespeed.io/documentation/sitespeed.io/continuously-run-your-tests/).
+You can check out the [official sitespeedio documentation at sitespeed's documentation site](https://www.sitespeed.io/documentation/sitespeed.io/continuously-run-your-tests/).
 
-Do you want to add a new URL to test on desktop? Navigate to [**desktop**](https://github.com/sitespeedio/dashboard.sitespeed.io/tree/main/tests/desktop) and create your new file there. Want to add a user journey? Add the script in the same place and name then *.js*.
+The [**loop.bat**](https://github.com/nholdenafcu/sitespeed-performance/loop.bat) is the start point. Run it. That script will git pull the repo for every iteration and run the script [**run.bat**](https://github.com/nholdenafcu/sitespeed-performance/run.bat).
 
-Our example run tests for [desktop](https://github.com/sitespeedio/dashboard.sitespeed.io/tree/main/tests/desktop), [emulated mobile](https://github.com/sitespeedio/dashboard.sitespeed.io/tree/main/tests/emulatedMobile) (both URLs and scripts).
-
-The structure looks like this:
-
-<pre>
-.
-├── README.md
-├── config
-│   ├── README.md
-│   ├── alexaDesktop.json
-│   ├── alexaMobile.json
-│   ├── crux.json
-│   ├── desktop.json
-│   ├── desktopMulti.json
-│   ├── emulatedMobile.json
-│   ├── emulatedMobileMulti.json
-│   ├── loginWikipedia.json
-│   ├── news.json
-│   ├── replay.json
-│   └── spa.json
-├── loop.sh
-├── run.sh
-└── tests
-    ├── desktop
-    │   ├── alexaDesktop.txt
-    │   ├── crux.txt
-    │   ├── desktop.txt
-    │   ├── desktopMulti.js
-    │   ├── loginWikipedia.js
-    │   ├── news.txt
-    │   ├── replay.replay
-    │   └── spa.js
-    └── emulatedMobile
-        ├── alexaMobile.txt
-        ├── emulatedMobile.txt
-        └── emulatedMobileMulti.js
-        
-</pre>
-
-The [**loop.sh**](https://github.com/sitespeedio/dashboard.sitespeed.io/blob/main/loop.sh) is the start point. Run it. That script will git pull the repo for every iteration and run the script [**run.sh**](https://github.com/sitespeedio/dashboard.sitespeed.io/blob/main/run.sh).
-
-Then [**run.sh**](https://github.com/sitespeedio/dashboard.sitespeed.io/blob/main/run.sh) will use the right configuration in [**/config/**](https://github.com/sitespeedio/dashboard.sitespeed.io/tree/main/config) and run the URLs/scripts that are configured. Our configuration files extends configuration files that only exits on the server where we hold secret information like username and passwords. You don't need set it up that way, if you use a private git repo.
+Then [**run.bat**](https://github.com/nholdenafcu/sitespeed-performance/run.bat) will use the right configuration in [**/config/**](https://github.com/nholdenafcu/sitespeed-performance/config) and run the URLs/scripts that are configured. Our configuration files extends configuration files that only exits on the server where we hold secret information like username and passwords.
 
 ## Install
-Run your tests on a Linux machine. You will need Docker and Git. You can follow [Dockers official documentation](https://docs.docker.com/install/linux/docker-ce/ubuntu/) or follow our instructions:
-
-```bash
-# Update
-sudo apt-get update
-sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common -y
-
-## Add official key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-
-## Add repo
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-
-sudo apt-get update
-
-# Install docker
-sudo apt-get install docker-ce docker-ce-cli containerd.io -y
-```
-
-You also need git on your server:
-```
-sudo apt-get install git -y
-```
-
-Then depending on where you run your tests, you wanna [setup the firewall](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-18-04).
-
-Your server now ready for testing.
+Run your tests on a Linux machine. You will need Docker and Git. You can follow [Dockers official documentation](https://docs.docker.com/desktop/install/windows-install/) or follow our instructions:
 
 ## Setup
 
-On our server we clone this repo but you should clone your own :)
+Clone from the afcu sitespeed-performance repo.
 ```
-git clone https://github.com/sitespeedio/dashboard.sitespeed.io.git
+git clone https://github.com/nholdenafcu/sitespeed-performance.git
 ```
 
-On our server we have two configuration files that only exits on that server, that's where we have the secrets. They look like this:
+On our server we have a configuration file that only exits on that server. It looks like this:
 
 **/conf/secrets.json**
 ```json
@@ -106,33 +83,16 @@ On our server we have two configuration files that only exits on that server, th
     "host": "OUR_HOST",
     "auth": "THE_AUTH",
     "annotationScreenshot": true
-  },
-  "slack": {
-    "hookUrl": "https://hooks.slack.com/services/THE/SECRET/S"
-  },
-  "resultBaseURL": "https://s3.amazonaws.com/results.sitespeed.io",
-  "s3": {
-    "key": "S3_KEY",
-    "secret": "S3_SECRET",
-    "bucketname": "BUCKET_NAME",
-    "removeLocalResult": true
-  },
-  "browsertime": {
-    "wikipedia": {
-      "user": "username",
-      "password": "password"
-    }
   }
-
 }
 ```
 
 ## Run
 
 Go into the directory that where you cloned the directory: `cd dashboard.sitespeed.io`
-And then start: `nohup ./loop.sh &`
+And then start: `.\loop.bat`
 
-To verify that everything works you should tail the log: `tail -f /tmp/sitespeed.io.log`
+Alternatively, you can simply double click and run the bat process.
 
 ## Stop your tests
 
@@ -141,12 +101,22 @@ Starting your test creates a file named **sitespeed.run** in your current folder
 
 The script will then stop when it has finished the current run(s).
 
-## Start on reboot
-Sometimes your cloud server reboots. To make sure it auto start your tests, you can add it to the crontab. Edit the crontab with `crontab -e` and add (make sure to change the path to your installation and the server name):
+## Add your own tests
 
-```bash
-@reboot rm /root/dashboard.sitespeed.io/sitespeed.run;cd /root/dashboard.sitespeed.io/ && ./loop.sh
+Do you want to add a new test script? Navigate to [**tests**](https://github.com/nholdenafcu/sitespeed-performance/tests) and create your new *.js* file there.
+
+The tests folder is intended for new test scripts that will be ran every loop. Inside the scripts folder you can see common modules imported by test scripts for the backbase project like [**login.js**](https://github.com/nholdenafcu/sitespeed-performance/scripts/login.js) and [**logout.js**](https://github.com/nholdenafcu/sitespeed-performance/scripts/logout.js).
+
+These scripts can be run together to create dynamic user journeys and test scripts to performance test any website Addition Financial wishes to test.
+
+All scripts in the scripts directory should follow a similar format. They should all be node.js modules that import the sitespeed contexts and commands objects as well as importing our runtime variables/object.
+
+Most scripts start like this:
+
+```js
+module.exports = async function(context, commands, env)
 ```
 
-[travis-image]: https://img.shields.io/travis/sitespeedio/dashboard.sitespeed.io.svg?style=flat-square
-[travis-url]: https://travis-ci.org/sitespeedio/dashboard.sitespeed.io
+The context and commands are extended from Sitespeed scripting and the env is the environment that we are testing in.
+
+For more resources on creating performance testing scripts, you can follow [official sitespeedio documentation at sitespeed's documentation site](https://www.sitespeed.io/documentation/sitespeed.io/scripting/).

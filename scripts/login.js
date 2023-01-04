@@ -6,6 +6,8 @@ module.exports = async function(context, commands, env) {
       `https://web.${env}.afcu.live.backbaseservices.com/retail-banking`
     );
 
+    await commands.wait.byId('username', 50000);
+
     await commands.addText.byId('TestAMonroe', 'username');
     await commands.addText.byId('BB21@Amonroe', 'password-field');
 
