@@ -12,7 +12,7 @@ for %%f in (%~dp0tests\*.txt %~dp0tests\*.js) do (
         set FILENAME=tests/%%~nf.js
         set CONFIG_FILE=config/%%~nf.json
         if exist "!CONFIG_FILE!" (echo "Using config file !CONFIG_FILE!") else (echo "Missing config file !CONFIG_FILE%!")
-        docker run %DOCKER_SETUP% %DOCKER_CONTAINER% --config !CONFIG_FILE! -n 3 -b %%a !FILENAME! --multi
+        docker run %DOCKER_SETUP% %DOCKER_CONTAINER% --config !CONFIG_FILE! -n 1 -b %%a !FILENAME! --multi --net=host --spa
     )
 )
 

@@ -1,4 +1,4 @@
-const environments = ['tst', 'stg'];
+const environments = ['stg', 'tst'];
 const loginScript = require('../scripts/login');
 
 module.exports = async function(context, commands) {

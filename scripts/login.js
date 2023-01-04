@@ -1,17 +1,15 @@
 module.exports = async function(context, commands, env) {
-  await commands.navigate(
-    `https://web.${env}.afcu.live.backbaseservices.com/retail-banking`
-  );
-
   await commands.measure.start(`login-${env}`);
 
   try {
+    await commands.navigate(
+      `https://web.${env}.afcu.live.backbaseservices.com/retail-banking`
+    );
+
     await commands.addText.byId('TestAMonroe', 'username');
     await commands.addText.byId('BB21@Amonroe', 'password-field');
 
     await commands.click.byIdAndWait('kc-login');
-
-    // await commands.wait.byTime(4000);
 
     const url = await commands.js.run('return window.location.href');
 
