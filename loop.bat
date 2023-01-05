@@ -14,7 +14,7 @@ if exist "%CONTROL_FILE%" (
 )
 
 for /L %%N in (1,0,10) do (
-    git pull
+    @REM git pull
     .\run.bat
 
     if exist "%CONTROL_FILE%" (

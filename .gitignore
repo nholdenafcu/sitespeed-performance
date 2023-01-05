@@ -1,6 +1,8 @@
 .DS_Store
-node_modules
-sitespeed.run
-nohup.out
+
 sitespeed-result/
+data/
+node_modules/
+
 config/secrets.json
+sitespeed.run
